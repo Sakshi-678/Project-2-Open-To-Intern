@@ -6,12 +6,12 @@ const createAuthor = async function (req, res) {
 
         let body = req.body;
         let data = await AuthorModel.create(body);
-        res.status(201).send({msg: data})
+        res.status(201).send({status: true, msg: data})
 
     }
     catch(err){
 
-        res.status(405).send({msg: err.message})
+        res.status(400).send({msg: err.message})
 
     }
 }
