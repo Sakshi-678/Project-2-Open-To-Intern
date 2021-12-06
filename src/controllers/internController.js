@@ -56,7 +56,7 @@ const createIntern = async function (req, res) {
 
 
         if (!isValid(collegeName)) {
-            res.status(400).send({ status: false, message: 'Invalid request parameters. Please provide valid collegeName' })
+            res.status(400).send({ status: false, message: 'Invalid request parameters. Please provide valid collegeName. There might be spacing , so try without spacing' })
             return
         }
 
@@ -79,7 +79,7 @@ const createIntern = async function (req, res) {
         const collegeData = await CollegeModel.findOne({name: nm })
 
         if(!collegeData){
-            res.status(400).send({status: false, message: `${nm} is not a valid college name`})
+            res.status(400).send({status: false, message: `${nm} is not a valid college name or There might be spacing , so try without spacing`})
         }
 
         else{
@@ -117,10 +117,10 @@ const getAllInterns = async function (req, res) {
         }
 
         else {
-            let propername = queryname.replace(" ", "")
+            let propername = queryname.replace(/\s+/g, '') 
 
             if (propername != queryname){
-                res.status(400).send({status : false, err: "college anabbreviation contains space , try writing without any space"})
+                res.status(400).send({status : false, err: "college abbreviation contains space , try writing without any space"})
             }
     
             else{
@@ -129,7 +129,7 @@ const getAllInterns = async function (req, res) {
                 // in case the query name is not in lowecase then instead of converting in lower case 
 
                 if (tempcolgName != tempcolgName.toLowerCase()){
-                    res.status(400).send({status : false, err: "college anabbreviation should be in LowerCase / Small. Write in small letters and try again"})
+                    res.status(400).send({status : false, err: "college abbreviation should be in LowerCase / Small. Write in small letters and try again"})
                 }
 
                 else{
@@ -138,13 +138,14 @@ const getAllInterns = async function (req, res) {
                     let temp = await CollegeModel.findOne({name : colgName})
                     
                     if (!temp){
-                        res.status(400).send({status : false , err: "Invalid parameters: Provide a valid college anabbreviation"})
+                        res.status(400).send({status : false , err: "Invalid parameters: Provide a valid college abbreviation"})
                     } 
             
                     else{
                         let ID = temp._id
                         let data = temp
-                
+                        
+                        // INTERN NAMES CAN HAVE MUTIPLE SPACES COZ THERE CAN BE A NAME CALLED RAHUL KUMAR SHAW SO WE PURPOSELY DID NOT REMOVED THE SPACE.
                         let interns = await InternModel.find({collegeId: ID}).select({_id: 1, name:1,email: 1, mobile: 1})
                         
                         if (interns.length == 0){
@@ -155,8 +156,7 @@ const getAllInterns = async function (req, res) {
                         else{
                             
                             let details = {name : data.name, fullname : data.fullName, logolink: data.logo, interests : interns}
-                        
-            
+                    
                             res.status(200).send({status: true, Details: details})
                         }
                         
