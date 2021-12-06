@@ -15,6 +15,8 @@ const createIntern = async function (req, res) {
     }
 
     const regexMobile = /^(?:(?:\+|0{0,2})91(\s*[\-]\s*)?|[0]?)?[6789]\d{9}$/;
+
+
     try {
         const requestBody = req.body;
         if (!isValidRequestBody(requestBody)) {
@@ -105,38 +107,70 @@ const createIntern = async function (req, res) {
 
 const getAllInterns = async function (req, res) {
     try {
-        let tempcolgName = req.query.collegeName
+        
+        // handling if there are any space that are given in query param 
+       
+        let queryname = req.query.collegeName 
 
-        if(!tempcolgName){
+        if(!queryname){
             res.status(400).send({status: false, err: "College Name is required"})
         }
-        let colgName = tempcolgName.toLowerCase()
-        
-        let temp = await CollegeModel.findOne({name : colgName})
-        
-        if (!temp){
-            res.status(400).send({status : false , err: "Invalid parameters: Provide a valid college anabbreviation"})
-        } 
 
-        else{
-            let ID = temp._id
-            let data = temp
-    
-            let interns = await InternModel.find({collegeId: ID}).select({_id: 1, name:1,email: 1, mobile: 1})
-    
-            if (!interns){
-                res.status(200).send({status : true , msg: "No Interns applied for an internship"})
+        else {
+            let propername = queryname.replace(" ", "")
+
+            if (propername != queryname){
+                res.status(400).send({status : false, err: "college anabbreviation contains space , try writing without any space"})
             }
-            
+    
             else{
-                
-                let details = {name : data.name, fullname : data.fullName, logolink: data.logo, interests : interns}
-            
+                let tempcolgName = queryname
 
-                res.status(200).send({status: true, Details: details})
+                // in case the query name is not in lowecase then instead of converting in lower case 
+
+                if (tempcolgName != tempcolgName.toLowerCase()){
+                    res.status(400).send({status : false, err: "college anabbreviation should be in LowerCase / Small. Write in small letters and try again"})
+                }
+
+                else{
+                    let colgName = tempcolgName
+    
+                    let temp = await CollegeModel.findOne({name : colgName})
+                    
+                    if (!temp){
+                        res.status(400).send({status : false , err: "Invalid parameters: Provide a valid college anabbreviation"})
+                    } 
+            
+                    else{
+                        let ID = temp._id
+                        let data = temp
+                
+                        let interns = await InternModel.find({collegeId: ID}).select({_id: 1, name:1,email: 1, mobile: 1})
+                        
+                        if (interns.length == 0){
+                            let details = {name : data.name, fullname : data.fullName, logolink: data.logo, interests : interns}
+                            res.status(200).send({status : true , data: details, msg: "No Interns applied for an internship"})
+                        }
+                        
+                        else{
+                            
+                            let details = {name : data.name, fullname : data.fullName, logolink: data.logo, interests : interns}
+                        
+            
+                            res.status(200).send({status: true, Details: details})
+                        }
+                        
+                    }
+
+                }
+
+    
             }
             
         }
+
+
+
     }
 
     catch (err) {
