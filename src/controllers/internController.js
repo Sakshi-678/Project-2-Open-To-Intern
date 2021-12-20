@@ -44,18 +44,18 @@ const createIntern = async function (req, res) {
             res.status(400).send({ status: false, message: 'Invalid request parameters. Please provide valid collegeName .' })
             return
         }
-        const isNumberAlreadyUsed = await InternModel.findOne({ mobile });
+        const isNumberAlreadyUsed = await internModel.findOne({ mobile });
         if (isNumberAlreadyUsed) {
             res.status(400).send({ status: false, message: `${mobile} number is already registered` })
             return
         }
-        const isEmailAlreadyUsed = await InternModel.findOne({ email });
+        const isEmailAlreadyUsed = await internModel.findOne({ email });
         if (isEmailAlreadyUsed) {
             res.status(400).send({ status: false, message: `${email} email is already registered` })
             return
         }      //validation ends
         let nm = req.body.collegeName;
-        const collegeData = await CollegeModel.findOne({ name: nm })
+        const collegeData = await collegeModel.findOne({ name: nm })
         if (!collegeData) {
             res.status(400).send({ status: false, message: `${nm} is not a valid college name or There might be spacing or letters are in captial` })
             return
@@ -64,7 +64,7 @@ const createIntern = async function (req, res) {
         req.body.collegeId = collegeId;
 
         const internData = { name, email, mobile, collegeName, collegeId }
-        const createIntern = await InternModel.create(internData);
+        const createIntern = await internModel.create(internData);
         res.status(201).send({ status: true, message: `Intern created successfully`, data: createIntern });
 
     } catch (err) {
