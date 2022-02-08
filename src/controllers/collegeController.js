@@ -31,7 +31,7 @@ const createColleges = async function (req, res) {
         let Name = properspacing.toUpperCase()
         requestBody.name = Name
         // Extract params
-        const { name, fullName, logo } = requestBody;
+         const { name, fullName, logo } = requestBody;
         if (!isValid(logo)) {
             res.status(400).send({ status: false, message: 'logo is required' })
             return

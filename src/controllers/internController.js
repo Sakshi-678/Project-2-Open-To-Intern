@@ -9,7 +9,7 @@ const createIntern = async function (req, res) {
         return true;
     }
     const isValidRequestBody = function (requestBody) {
-        return Object.keys(requestBody).length > 0
+        return Object.keys(requestBody).length > 0 
     }
     const regexMobile = /^(?:(?:\+|0{0,2})91(\s*[\-]\s*)?|[0]?)?[6789]\d{9}$/;
     try {
